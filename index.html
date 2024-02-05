@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth;">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FairShare</title>
+  <!-- font-awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" />
+  <!-- styles -->
+  <link rel="stylesheet" href="./static/styles.css" type="text/css" />
+</head>
+
+<body>
+  <header id="home">
+    <!-- navbar -->
+    <nav id="nav">
+      <div class="nav-center">
+        <!-- nav header -->
+        <div class="nav-header">
+          <img src="./static/logo1.jpeg" class="logo" alt="logo" />
+          <button class="nav-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <!-- links -->
+        <div class="links-container">
+          <ul class="links">
+            <li>
+              <a href="#home" class="scroll-link">home</a>
+            </li>
+            <li>
+              <a href="#groups" class="scroll-link">groups</a>
+            </li>
+            <li>
+              <a href="#finances" class="scroll-link">finances</a>
+            </li>
+            <li>
+              <a href="#tours" class="scroll-link">about</a>
+            </li>
+          </ul>
+        </div>
+        <div class="profile-icon">
+          <div class="profile-image"></div>
+          <div class="profile-name" id="username-top-left"></div>
+          <div class="dropdown">
+            <!-- <a href="#about" class="dropdown-item">About Us</a> -->
+            <a href="./first.html" class=" dropdown-item">Logout</a>
+            <!-- <button class="logout-btn">Logout</button> -->
+          </div>
+        </div>
+    </nav>
+
+    <!-- banner -->
+    <div class="banner">
+      <div class="container">
+        <h1>FairShare</h1>
+        <p>
+          Looking to simplify your finances? Look no further than Splitwise!
+        </p>
+        <a href="#groups" class="scroll-link btn btn-white">see your groups</a>
+      </div>
+    </div>
+  </header>
+  <!-- groups -->
+  <section id="groups" class="section" style="margin-top:20px">
+    <div class="title">
+      <h2>your <span>groups</span></h2>
+      <article style="text-align: center; margin-top:30px;">
+        <h3>Wanna know how many groups you are in right now?</h3>
+        <ul id="list-of-groups">
+
+        </ul>
+        <button class="btn" id="new-group-button" onclick="listOfGroups()">SHOW GROUPS</button>
+      </article>
+
+      <div class="button-div-in-groups">
+        <div>
+          <h3>
+            <label for="group-name">Group Name:</label>
+            <input type="text" id="group-name" name="group_name"><br>
+          </h3>
+          <button class="btn" id="new-group-button" onclick="createNewGroup()">NEW GROUP</button>
+        </div>
+      </div>
+  </section>
+
+  <!-- finances -->
+  <section id="finances" class="section">
+    <div class="title">
+      <h2>your <span>finances</span></h2>
+      <article id="finances-container">
+        <h3>You owe others <span id="you-owe-them"></span>INR</h3>
+        <h3>Others owe you <span id="they-owe-you"></span>INR</h3>
+      </article>
+    </div>
+  </section>
+  <!-- contact -->
+  <section id="tours" class="section">
+    <div class="title">
+      <h2>About <span>us</span></h2>
+      <div style="font-size:1.2rem; padding:3vh 5vw;margin: 0px;">
+        <p>
+          Looking to <span>simplify</span> your finances? Look no further than Splitwise!
+        </p>
+        <p>
+          With Splitwise, managing shared expenses has never been easier. Say goodbye to awkward IOUs and messy
+          spreadsheets. Splitwise simplifies everything for you, making it a breeze to split bills, rent, groceries, and
+          even vacation costs with friends, family, and roommates.
+        </p>
+        <p>
+          With features like expense tracking, bill reminders, and easy payment options, Splitwise takes the stress out
+          of
+          managing shared finances. Plus, it's available on all your devices, so you can access it ,<span> anywhere,
+            anytime</span>.
+        </p>
+        <p>
+          Whether you're splitting a meal with friends or sharing rent with roommates, Splitwise makes it simple and
+          stress-free. Try it <span> today </span>and see just how easy it is to manage your shared expenses!
+        </p>
+      </div>
+    </div>
+  </section>
+  <!-- footer -->
+  <footer class="section">
+    <p>
+      copyright &copy; backroads travel tours company
+      <span id="date"></span>. all rights reserved
+    </p>
+  </footer>
+  <a class="scroll-link top-link" href="#home">
+    <i class="fas fa-arrow-up"></i>
+  </a>
+  <!-- javascript -->
+  <script src="./app.js"></script>
+
+  <script>
+    // Get the username from the URL query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+    const email = urlParams.get('email');
+    const user_id = urlParams.get('user_id');
+
+
+    // Set the username in the DOM element
+    document.getElementById("username-top-left").textContent = username;
+
+    // window.addEventListener('load', () => {
+    //   window.location.href = `index.html?username=${encodeURIComponent(username)}&user_id=${encodeURIComponent(user_id)}&email=${encodeURIComponent(email)}#groups`;
+    // });
+
+    console.log(user_id);
+
+
+    //  TO CREATE A NEW GROUP 
+
+    const createNewGroup = () => {
+
+      let group_name = document.getElementById("group-name").value;
+      // user_id = user_id + 1;
+      let data = { "username": username, "user_id": user_id, "group_name": group_name };
+      console.log(user_id);
+      console.log(group_name);
+      // console.log("data is: ",data);
+
+      fetch('http://127.0.0.1:5000/app/create_group', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(result => {
+
+          if (result["status"] == "error") {
+            alert("Group already exists!");
+          }
+          else {
+            alert("Group created!");
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      return false;
+    }
+
+    // TO DISPLAY A SPECIFIC GROUP
+    const viewGroup = (group_name, user_id) => {
+      let url = `http://127.0.0.1:5000/app/group/${group_name}/${user_id}`;
+      window.open(url, '_blank');
+    }
+
+    //  TO DISPLAY THE LIST OF GROUPS 
+
+    const listOfGroups = () => {
+      let data = { "user_id": parseInt(user_id) };
+      // make a POST request to the API endpoint to retrieve the groups
+      fetch("http://127.0.0.1:5000/app/groups_of_user", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(groups => {
+          let listOfGroups = document.getElementById("list-of-groups");
+          groups.forEach((group, index) => {
+            // let li = document.createElement("li");
+            // li.textContent = group.group_name;
+            // listOfGroups.appendChild(li);
+            let li = document.createElement("li");
+            li.classList.add("group_name");
+
+            let button = document.createElement("button");
+            button.textContent = group.group_name;
+            button.setAttribute("onclick", `viewGroup('${button.textContent}','${user_id}')`);
+
+            li.appendChild(button);
+            listOfGroups.appendChild(li);
+
+            // console.log(index);
+          });
+        })
+        .catch(error => console.error("Error fetching groups: ", error));
+    }
+
+    // FINAL OWED AND OWEE
+    const youOweThem = document.getElementById("you-owe-them");
+    const theyOweYou = document.getElementById("they-owe-you");
+    youOweThem.innerHTML = 0;
+    theyOweYou.innerHTML = 0;
+
+    const oweThem = () => {
+      const data = { "user_id": user_id }
+      fetch("http://127.0.0.1:5000/app/user_borrowed", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(response => response.json())
+        .then(result => {
+          youOweThem.innerHTML = result;
+        })
+        .catch(error => console.log(error))
+    }
+
+    // const oweYou = () => {
+    //   const data = { "user_id": user_id }
+    //   fetch("http://127.0.0.1:5000/app/user_given", {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(data)
+    //   }).then(response => response.json())
+    //     .then(result => {
+    //       theyOweYou.innerHTML = result;
+    //     })
+    //     .catch(error => console.log(error))
+    // }
+    //
+    oweThem();
+    // oweYou();
+
+
+  </script>
+</body>
+
+</html>
